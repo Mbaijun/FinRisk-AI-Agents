@@ -1,0 +1,23 @@
+﻿# Python缓存
+__pycache__/
+*.py[cod]
+
+# 虚拟环境
+venv/
+env/
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 项目生成的文件
+.env
+*.csv
+test_*.py
+compare_*.py
+diagnose.py
