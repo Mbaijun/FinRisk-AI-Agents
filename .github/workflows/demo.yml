@@ -1,0 +1,55 @@
+name: Daily Demo Deploy
+
+on:
+  schedule:
+    # 每天 UTC 时间 00:00 （北京时间早上8点）运行一次，生成新的ngrok链接
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 允许手动触发
+    inputs:
+      reason:
+        description: '手动触发原因'
+        required: false
+        default: '测试部署'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: pip install gradio
+
+    - name: Run Gradio app in background
+      run: |
+        python run_simple.py &
+        sleep 5  # 等待应用启动
+
+    - name: Setup ngrok
+      uses: crazy-max/ghaction-setup-ngrok@v3
+      with:
+        authtoken: ${{ secrets.NGROK_AUTHTOKEN }}
+
+    - name: Expose app and update README
+      run: |
+        # 启动ngrok并获取公共URL
+        ngrok http 7860 > /dev/null &
+        sleep 5
+        PUBLIC_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+        echo "Public URL: $PUBLIC_URL"
+        
+        # 用新链接更新README.md
+        sed -i "s|https://.*ngrok-free\.dev|$PUBLIC_URL|g" README.md
+        
+        # 配置Git并推送更新
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+        git add README.md
+        git commit -m "🤖 Auto-update demo link: $PUBLIC_URL" || echo "No changes to commit"
+        git push
