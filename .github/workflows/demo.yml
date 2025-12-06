@@ -45,11 +45,12 @@ jobs:
           NGROK_PID=$!
           sleep 25 # 关键：给予足够时间建立稳定隧道
 
-          # 5. 尝试获取公共URL (重试机制)
+          # 5. 尝试获取公共URL (重试机制，修正了jq命令)
           echo "尝试获取公共 URL..."
           MAX_RETRY=3
           for i in $(seq 1 $MAX_RETRY); do
-            PUBLIC_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url 2>/dev/null')
+            # 修正点：将 2>/dev/null 移至 curl 命令后
+            PUBLIC_URL=$(curl -s localhost:4040/api/tunnels 2>/dev/null | jq -r '.tunnels[0].public_url')
             if [ -n "$PUBLIC_URL" ] && [ "$PUBLIC_URL" != "null" ]; then
               echo "✅ 成功！Public URL: $PUBLIC_URL"
               echo "提示：此链接为临时链接，有效时间有限。"
@@ -69,10 +70,9 @@ jobs:
             tail -20 ngrok.log
             echo "=== ngrok API 状态 ==="
             curl -s localhost:4040/api/tunnels || echo "无法连接到 ngrok API"
-            exit 1 # 使工作流标记为失败，便于发现问题
+            exit 1
           fi
 
-          # 7. 【核心】获取成功后，保持进程运行一小段时间以确保隧道激活，然后退出
-          # 工作流在此结束，隧道会在ngrok后台继续短暂运行。
+          # 7. 获取成功后，保持进程运行一小段时间以确保隧道激活
           echo "隧道已建立。工作流即将完成，链接在短时间内可用。"
           sleep 30
