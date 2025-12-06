@@ -33,46 +33,33 @@ jobs:
           # 2. 配置认证
           ./ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
 
-          # 3. 启动应用 (注意：需确认 demo_gradio.py 是否监听 7860 端口)
+          # 3. 启动应用 (使用nohup，忽略挂断信号)
           echo "启动 Gradio 应用..."
-          python demo_gradio.py &
+          nohup python demo_gradio.py > app.log 2>&1 &
           APP_PID=$!
-          sleep 15 # 重要：给予应用更长的启动时间
+          echo "应用PID: $APP_PID"
+          sleep 15
 
-          # 4. 启动 ngrok 并记录日志
+          # 4. 启动 ngrok (同样使用nohup)
           echo "启动 ngrok 隧道..."
-          ./ngrok http 7860 --log stdout > ngrok.log &
+          nohup ./ngrok http 7860 --log stdout > ngrok.log 2>&1 &
           NGROK_PID=$!
-          sleep 25 # 关键：给予足够时间建立稳定隧道
+          echo "ngrok PID: $NGROK_PID"
+          sleep 25
 
-          # 5. 尝试获取公共URL (重试机制，修正了jq命令)
-          echo "尝试获取公共 URL..."
-          MAX_RETRY=3
-          for i in $(seq 1 $MAX_RETRY); do
-            # 修正点：将 2>/dev/null 移至 curl 命令后
-            PUBLIC_URL=$(curl -s localhost:4040/api/tunnels 2>/dev/null | jq -r '.tunnels[0].public_url')
-            if [ -n "$PUBLIC_URL" ] && [ "$PUBLIC_URL" != "null" ]; then
-              echo "✅ 成功！Public URL: $PUBLIC_URL"
-              echo "提示：此链接为临时链接，有效时间有限。"
-              break
-            else
-              echo "尝试 $i/$MAX_RETRY 获取失败，等待重试..."
-              sleep 10
-            fi
-          done
-
-          # 6. 如果最终失败，输出错误日志
-          if [ -z "$PUBLIC_URL" ] || [ "$PUBLIC_URL" = "null" ]; then
-            echo "❌ 错误：无法获取公共URL。请检查以下日志："
-            echo "=== 应用启动状态 ==="
-            ps aux | grep python
-            echo "=== ngrok 日志 (最后20行) ==="
-            tail -20 ngrok.log
-            echo "=== ngrok API 状态 ==="
-            curl -s localhost:4040/api/tunnels || echo "无法连接到 ngrok API"
+          # 5. 获取公共URL
+          PUBLIC_URL=$(curl -s localhost:4040/api/tunnels 2>/dev/null | jq -r '.tunnels[0].public_url')
+          if [ -n "$PUBLIC_URL" ] && [ "$PUBLIC_URL" != "null" ]; then
+            echo "✅ 隧道建立成功！Public URL: $PUBLIC_URL"
+            echo "⚠️  此工作流将保持运行最多6小时。链接在此期间有效。"
+            echo "⚠️  要停止演示，请手动取消此工作流运行。"
+            
+            # 6. 【关键】无限等待，保持作业活跃，直到手动取消或超时
+            while true; do
+              sleep 300  # 每5分钟打印一次状态，表明还活着
+              echo "[心跳] 演示仍在运行中... $(date)"
+            done
+          else
+            echo "❌ 错误：无法获取公共URL。"
             exit 1
           fi
-
-          # 7. 获取成功后，保持进程运行一小段时间以确保隧道激活
-          echo "隧道已建立。工作流即将完成，链接在短时间内可用。"
-          sleep 30
