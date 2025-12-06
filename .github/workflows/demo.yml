@@ -24,34 +24,38 @@ jobs:
 
       - name: Run and Expose with Ngrok
         run: |
-          # 1. 安装 ngrok
+          # 1. 安装 ngrok 和 jq
           wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
           tar -xzf ngrok-v3-stable-linux-amd64.tgz
           chmod +x ./ngrok
+          sudo apt-get update && sudo apt-get install -y jq curl
 
-          # 2. 配置 ngrok 认证令牌（从GitHub Secrets读取）
+          # 2. 配置 ngrok 认证令牌
           ./ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
 
           # 3. 在后台启动你的 Gradio 应用
           python demo_gradio.py &
           APP_PID=$!
           echo "Gradio app started with PID: $APP_PID"
+          sleep 10 # 等待应用启动
 
-          # 4. 等待应用启动
-          sleep 10
-
-          # 5. 在后台启动 ngrok 暴露 7860 端口
-          ./ngrok http 7860 > /dev/null &
+          # 4. 启动 ngrok 暴露 7860 端口，并保持在后台运行
+          ./ngrok http 7860 --log stdout > ngrok.log &
           NGROK_PID=$!
           echo "ngrok started with PID: $NGROK_PID"
+          sleep 10 # 等待 ngrok 建立隧道
 
-          # 6. 等待 ngrok 建立隧道并获取公共URL
-          sleep 10
+          # 5. 从 ngrok 的 API 获取公共 URL
           PUBLIC_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-          echo "Public URL: $PUBLIC_URL"
+          if [ -z "$PUBLIC_URL" ] || [ "$PUBLIC_URL" = "null" ]; then
+            echo "ERROR: Failed to get public URL. Ngrok log:"
+            cat ngrok.log
+            exit 1
+          fi
+          echo "✅ Public URL: $PUBLIC_URL"
+          echo "This URL will be active for a short period after this workflow ends."
 
-          # 7. (可选) 将URL写入仓库的README或环境变量，方便查看
-          echo "NGROK_PUBLIC_URL=$PUBLIC_URL" >> $GITHUB_ENV
-
-          # 8. 等待工作流结束（保持应用和ngrok运行）
-          wait $APP_PID $NGROK_PID
+          # 6. 【关键】在这里结束工作流，让链接在ngrok免费计划的有效期内（约2小时）可访问。
+          # 工作流成功结束，链接已生成。
+          # 注意：工作流结束后，Gradio和ngrok进程也会被终止，免费链接很快会失效。
+          # 若需长时间演示，需使用其他托管服务（如Vercel, Railway, Hugging Face Spaces）。
