@@ -1,55 +1,30 @@
-name: Daily Demo Deploy
+名称：每日演示部署
 
-on:
-  schedule:
-    # 每天 UTC 时间 00:00 （北京时间早上8点）运行一次，生成新的ngrok链接
-    - cron: '0 0 * * *'
-  workflow_dispatch: # 允许手动触发
-    inputs:
-      reason:
-        description: '手动触发原因'
-        required: false
-        default: '测试部署'
+在:
+  日程安排:
+  
+  workflow_dispatch:       # 允许手动触发
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+工作:
+  部署:
+    运行于：ubuntu-latest
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+    步骤:
+      - 名称: 结账代码
+        使用：actions/checkout@v4
 
-    - name: Install dependencies
-      run: pip install gradio
+      - 名称: 设置Python
+        使用：actions/setup-python@v5
+        与：
+          python-version: '3.10'
 
-    - name: Run Gradio app in background
-      run: |
-        python run_simple.py &
-        sleep 5  # 等待应用启动
+      - 名称: 安装依赖项
+        运行： |
+          使用pip安装 requirements.txt中的包：pip install -r requirements.txt
 
-    - name: Setup ngrok
-      uses: crazy-max/ghaction-setup-ngrok@v3
-      with:
-        authtoken: ${{ secrets.NGROK_AUTHTOKEN }}
-
-    - name: Expose app and update README
-      run: |
-        # 启动ngrok并获取公共URL
-        ngrok http 7860 > /dev/null &
-        sleep 5
-        PUBLIC_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-        echo "Public URL: $PUBLIC_URL"
-        
-        # 用新链接更新README.md
-        sed -i "s|https://.*ngrok-free\.dev|$PUBLIC_URL|g" README.md
-        
-        # 配置Git并推送更新
-        git config user.name 'github-actions[bot]'
-        git config user.email 'github-actions[bot]@users.noreply.github.com'
-        git add README.md
-        git commit -m "🤖 Auto-update demo link: $PUBLIC_URL" || echo "No changes to commit"
-        git push
+      - 名称: 运行和暴露 Ngrok
+        运行： |
+          echo "这一步将运行你的应用并通过 ngrok 暴露。"
+          echo "请在这里替换为你的实际启动命令，例如："
+          echo "python demo_gradio.py &"
+          echo " # 然后配置 ngrok authtoken 并启动 ngrok"
