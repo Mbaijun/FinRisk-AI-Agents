@@ -24,4 +24,34 @@ jobs:
 
       - name: Run and Expose with Ngrok
         run: |
-          echo "Placeholder: App and ngrok setup will go here."
+          # 1. 安装 ngrok
+          wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+          tar -xzf ngrok-v3-stable-linux-amd64.tgz
+          chmod +x ./ngrok
+
+          # 2. 配置 ngrok 认证令牌（从GitHub Secrets读取）
+          ./ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+
+          # 3. 在后台启动你的 Gradio 应用
+          python demo_gradio.py &
+          APP_PID=$!
+          echo "Gradio app started with PID: $APP_PID"
+
+          # 4. 等待应用启动
+          sleep 10
+
+          # 5. 在后台启动 ngrok 暴露 7860 端口
+          ./ngrok http 7860 > /dev/null &
+          NGROK_PID=$!
+          echo "ngrok started with PID: $NGROK_PID"
+
+          # 6. 等待 ngrok 建立隧道并获取公共URL
+          sleep 10
+          PUBLIC_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+          echo "Public URL: $PUBLIC_URL"
+
+          # 7. (可选) 将URL写入仓库的README或环境变量，方便查看
+          echo "NGROK_PUBLIC_URL=$PUBLIC_URL" >> $GITHUB_ENV
+
+          # 8. 等待工作流结束（保持应用和ngrok运行）
+          wait $APP_PID $NGROK_PID
