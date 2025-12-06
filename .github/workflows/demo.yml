@@ -24,38 +24,55 @@ jobs:
 
       - name: Run and Expose with Ngrok
         run: |
-          # 1. 安装 ngrok 和 jq
+          # 1. 安装依赖
           wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
           tar -xzf ngrok-v3-stable-linux-amd64.tgz
           chmod +x ./ngrok
           sudo apt-get update && sudo apt-get install -y jq curl
 
-          # 2. 配置 ngrok 认证令牌
+          # 2. 配置认证
           ./ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
 
-          # 3. 在后台启动你的 Gradio 应用
+          # 3. 启动应用 (注意：需确认 demo_gradio.py 是否监听 7860 端口)
+          echo "启动 Gradio 应用..."
           python demo_gradio.py &
           APP_PID=$!
-          echo "Gradio app started with PID: $APP_PID"
-          sleep 10 # 等待应用启动
+          sleep 15 # 重要：给予应用更长的启动时间
 
-          # 4. 启动 ngrok 暴露 7860 端口，并保持在后台运行
+          # 4. 启动 ngrok 并记录日志
+          echo "启动 ngrok 隧道..."
           ./ngrok http 7860 --log stdout > ngrok.log &
           NGROK_PID=$!
-          echo "ngrok started with PID: $NGROK_PID"
-          sleep 10 # 等待 ngrok 建立隧道
+          sleep 25 # 关键：给予足够时间建立稳定隧道
 
-          # 5. 从 ngrok 的 API 获取公共 URL
-          PUBLIC_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+          # 5. 尝试获取公共URL (重试机制)
+          echo "尝试获取公共 URL..."
+          MAX_RETRY=3
+          for i in $(seq 1 $MAX_RETRY); do
+            PUBLIC_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url 2>/dev/null')
+            if [ -n "$PUBLIC_URL" ] && [ "$PUBLIC_URL" != "null" ]; then
+              echo "✅ 成功！Public URL: $PUBLIC_URL"
+              echo "提示：此链接为临时链接，有效时间有限。"
+              break
+            else
+              echo "尝试 $i/$MAX_RETRY 获取失败，等待重试..."
+              sleep 10
+            fi
+          done
+
+          # 6. 如果最终失败，输出错误日志
           if [ -z "$PUBLIC_URL" ] || [ "$PUBLIC_URL" = "null" ]; then
-            echo "ERROR: Failed to get public URL. Ngrok log:"
-            cat ngrok.log
-            exit 1
+            echo "❌ 错误：无法获取公共URL。请检查以下日志："
+            echo "=== 应用启动状态 ==="
+            ps aux | grep python
+            echo "=== ngrok 日志 (最后20行) ==="
+            tail -20 ngrok.log
+            echo "=== ngrok API 状态 ==="
+            curl -s localhost:4040/api/tunnels || echo "无法连接到 ngrok API"
+            exit 1 # 使工作流标记为失败，便于发现问题
           fi
-          echo "✅ Public URL: $PUBLIC_URL"
-          echo "This URL will be active for a short period after this workflow ends."
 
-          # 6. 【关键】在这里结束工作流，让链接在ngrok免费计划的有效期内（约2小时）可访问。
-          # 工作流成功结束，链接已生成。
-          # 注意：工作流结束后，Gradio和ngrok进程也会被终止，免费链接很快会失效。
-          # 若需长时间演示，需使用其他托管服务（如Vercel, Railway, Hugging Face Spaces）。
+          # 7. 【核心】获取成功后，保持进程运行一小段时间以确保隧道激活，然后退出
+          # 工作流在此结束，隧道会在ngrok后台继续短暂运行。
+          echo "隧道已建立。工作流即将完成，链接在短时间内可用。"
+          sleep 30
