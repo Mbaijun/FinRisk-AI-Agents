@@ -1,0 +1,55 @@
+名称：每日演示部署
+
+在：
+  日程安排:
+    # 每天 UTC 时间 00:00 （北京时间早上8点）运行一次，生成新的ngrok链接
+
+  workflow_dispatch: # 允许手动触发
+    输入：
+      原因:
+        描述: '手动触发原因'
+        必需： 否
+        默认： '测试部署'
+
+工作:
+  部署:
+    运行于：ubuntu-latest
+    步骤：
+    - 名称: 结账代码
+      使用：actions/checkout@v3
+
+    - 名称: 设置Python
+      使用：actions/setup-python@v4
+      与：
+        python-version：'3.11'
+
+    - 名称: 安装依赖项
+      运行：pip install gradio
+
+    - 名称: 在后台运行Gradio应用程序
+      运行：|
+        python run_simple.py &
+        睡眠 5  # 等待应用启动
+
+    - 名称: 设置 ngrok
+      使用：crazy-max/ghaction-setup-ngrok@v3
+      与：
+        authtoken：${{ secrets.NGROK_AUTHTOKEN }}
+
+    - 名称: 暴露应用程序并更新README
+      运行：|
+        # 启动ngrok并获取公共URL
+        ngrok http 7860 > /dev/null &
+        睡眠 5
+        PUBLIC_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '".tunnels[0].public_url')
+        echo "公共URL: $PUBLIC_URL"
+        
+        # 用新链接更新README.md
+        sed -i "s|https://.*ngrok-free\.dev|$PUBLIC_URL|g" README.md
+        
+        # 配置Git并推送更新
+        git 配置用户名称 'github-actions[bot]'
+        git 配置用户电子邮件 'github-actions[bot]@users.noreply.github.com'
+        git add README.md
+        git commit -m "🤖 自动更新演示链接: $PUBLIC_URL" || echo "没有可提交的更改"
+        git 推送
