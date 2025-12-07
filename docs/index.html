@@ -4,105 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinRisk-AI-Agents - 金融风险智能体演示</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* 基础样式 */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; min-height: 100vh; padding: 20px; }
-        .container { max-width: 1000px; margin: 40px auto; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); overflow: hidden; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; min-height: 100vh; padding: 20px; line-height: 1.6; }
+        .container { max-width: 900px; margin: 40px auto; background: rgba(255, 255, 255, 0.98); border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); overflow: hidden; }
         header { background: linear-gradient(to right, #4f46e5, #7c3aed); color: white; padding: 40px 30px; text-align: center; }
-        h1 { font-size: 2.8rem; margin-bottom: 10px; }
-        .tagline { font-size: 1.2rem; opacity: 0.9; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .tagline { font-size: 1.1rem; opacity: 0.9; }
         main { padding: 40px 30px; }
-        .card { background: white; border-radius: 15px; padding: 30px; margin-bottom: 25px; border-left: 5px solid #4f46e5; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        h2 { color: #4f46e5; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .btn { display: inline-block; background: linear-gradient(to right, #4f46e5, #7c3aed); color: white; padding: 14px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; margin: 10px 10px 10px 0; transition: all 0.3s; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
+        .card { background: #f8fafc; border-radius: 15px; padding: 25px; margin-bottom: 25px; border-left: 5px solid #4f46e5; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        h2 { color: #4f46e5; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        h3 { color: #6b7280; margin: 20px 0 10px 0; font-size: 1.1rem; }
+        .btn { display: inline-block; background: linear-gradient(to right, #4f46e5, #7c3aed); color: white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: bold; margin: 10px 10px 10px 0; transition: all 0.3s; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); font-size: 1rem; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4); }
         .btn-secondary { background: linear-gradient(to right, #10b981, #34d399); }
         .btn-warning { background: linear-gradient(to right, #f59e0b, #fbbf24); }
-        .link-box { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 20px; margin: 20px 0; font-family: monospace; word-break: break-all; }
-        .warning { background: #fef3c7; border-left-color: #f59e0b; }
-        .warning h2 { color: #d97706; }
-        .step { margin-bottom: 25px; }
-        footer { text-align: center; padding: 25px; color: #6b7280; border-top: 1px solid #e5e7eb; }
-        @media (max-width: 768px) { .container { margin: 20px auto; } h1 { font-size: 2rem; } }
+        .step { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #e5e7eb; }
+        .step:last-child { border-bottom: none; }
+        code { background: #1f2937; color: #f3f4f6; padding: 3px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        ul, ol { padding-left: 25px; margin: 10px 0; }
+        li { margin-bottom: 8px; }
+        footer { text-align: center; padding: 25px; color: #6b7280; border-top: 1px solid #e5e7eb; font-size: 0.9rem; }
+        @media (max-width: 768px) { .container { margin: 20px auto; padding: 0 15px; } h1 { font-size: 2rem; } .btn { display: block; width: 100%; margin: 10px 0; text-align: center; } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-robot"></i> FinRisk-AI-Agents</h1>
-            <p class="tagline">基于多智能体的金融风险分析系统 - 交互式演示</p>
+            <h1>🚀 FinRisk-AI-Agents</h1>
+            <p class="tagline">基于多智能体的金融风险分析系统</p>
         </header>
         <main>
-            <!-- 方法1：直接链接 -->
             <section class="card">
-                <h2><i class="fas fa-rocket"></i> 方法一：快速访问（可能需简单设置）</h2>
-                <p>点击下方按钮，访问最新的在线演示。由于使用免费中转服务，首次访问可能需要：</p>
+                <h2>📖 最新演示访问指南</h2>
+                <p>本项目的交互式演示链接由自动化系统每日更新。由于演示运行在动态隧道服务上，链接会定期变化。</p>
+                <p><strong>请按照以下任一方法访问最新的演示：</strong></p>
                 <div class="step">
-                    <p><strong>A. 安装浏览器扩展（推荐，一劳永逸）</strong></p>
-                    <a href="https://chromewebstore.google.com/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj" class="btn" target="_blank"><i class="fas fa-puzzle-piece"></i> 安装 ModHeader (Chrome)</a>
-                    <a href="https://microsoftedge.microsoft.com/addons/detail/modheader/opgbiafapkbbnbnjcdomjfpmfhogcomg" class="btn" target="_blank"><i class="fab fa-edge"></i> ModHeader (Edge)</a>
-                    <p>安装后，点击扩展图标，添加一个请求头：名称 <code>ngrok-skip-browser-warning</code>，值 <code>true</code>。</p>
+                    <h3>方法一：前往项目主页获取最新链接（推荐）</h3>
+                    <p>项目主仓库的 <code>README.md</code> 文件顶部会始终保持更新，包含最新的可用链接和访问说明。</p>
+                    <a href="https://github.com/Mbaijun/FinRisk-AI-Agents#readme" class="btn" target="_blank">
+                        🔗 前往 GitHub 项目主页
+                    </a>
                 </div>
                 <div class="step">
-                    <p><strong>B. 直接访问（若看到警告页，请按页面提示操作）</strong></p>
-                    <a id="directLink" class="btn btn-secondary" href="#" target="_blank"><i class="fas fa-external-link-alt"></i> 打开 FinRisk 演示</a>
-                    <p class="link-box">当前演示链接：<span id="currentLink">正在加载最新链接...</span></p>
+                    <h3>方法二：通过浏览器扩展绕过安全页（备用）</h3>
+                    <p>如果直接访问演示链接时看到安全警告页面，可以安装扩展快速绕过：</p>
+                    <ol>
+                        <li>安装浏览器扩展：
+                            <a href="https://chromewebstore.google.com/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj" target="_blank">ModHeader (Chrome)</a> 或
+                            <a href="https://microsoftedge.microsoft.com/addons/detail/modheader/opgbiafapkbbnbnjcdomjfpmfhogcomg" target="_blank">ModHeader (Edge)</a>.
+                        </li>
+                        <li>点击扩展图标，添加一个请求头：<br>
+                            <strong>名称</strong>: <code>ngrok-skip-browser-warning</code><br>
+                            <strong>值</strong>: <code>true</code>
+                        </li>
+                        <li>刷新演示页面即可。</li>
+                    </ol>
                 </div>
             </section>
-            <!-- 方法2：项目主页 -->
             <section class="card">
-                <h2><i class="fab fa-github"></i> 方法二：通过项目主页访问</h2>
-                <p>项目的 GitHub README 首页始终展示最新的演示链接和访问指南。</p>
-                <a href="https://github.com/Mbaijun/FinRisk-AI-Agents#readme" class="btn" target="_blank"><i class="fab fa-github"></i> 前往项目主页</a>
-            </section>
-            <!-- 本地运行 -->
-            <section class="card">
-                <h2><i class="fas fa-laptop-code"></i> 本地运行完整项目</h2>
-                <p>获取完整的源代码，在您的本地环境运行功能更强大的主应用。</p>
-                <a href="https://github.com/Mbaijun/FinRisk-AI-Agents" class="btn btn-warning" target="_blank"><i class="fas fa-download"></i> 克隆仓库到本地</a>
+                <h2>⚙️ 探索完整项目</h2>
+                <p>访问项目仓库，获取完整的源代码、详细文档，并在本地运行功能更强大的主应用。</p>
+                <a href="https://github.com/Mbaijun/FinRisk-AI-Agents" class="btn btn-secondary" target="_blank">
+                    📂 查看项目源码与文档
+                </a>
             </section>
         </main>
         <footer>
-            <p>本页面由 GitHub Pages 托管 | FinRisk-AI-Agents 项目 © 2024</p>
-            <p><small>提示：演示链接可能每日更新，此页面始终指向最新可用链接。</small></p>
+            <p>FinRisk-AI-Agents 项目 © 2024 | 本页面通过 GitHub Pages 托管</p>
+            <p><small>提示：如需查看项目演示，请务必使用方法一获取当日最新的有效链接。</small></p>
         </footer>
     </div>
-
-    <script>
-        // 这个脚本会自动从你仓库的 README 中提取最新的 ngrok 链接
-        // 它首先尝试一个固定的获取位置，如果失败，则使用一个备用引导链接
-        async function updateDemoLink() {
-            const linkElement = document.getElementById('currentLink');
-            const button = document.getElementById('directLink');
-            // 主要尝试：从你的README文件获取
-            const readmeUrl = 'https://raw.githubusercontent.com/Mbaijun/FinRisk-AI-Agents/main/README.md';
-            // 备用链接：如果获取失败，引导用户去主页查看
-            const fallbackUrl = 'https://github.com/Mbaijun/FinRisk-AI-Agents#readme';
-
-            try {
-                const response = await fetch(readmeUrl);
-                const text = await response.text();
-                // 在README中查找ngrok链接（简化匹配）
-                const urlMatch = text.match(/https:\/\/[a-zA-Z0-9-]+\.ngrok-free\.dev\/?/);
-                if (urlMatch) {
-                    const latestUrl = urlMatch[0];
-                    linkElement.textContent = latestUrl;
-                    linkElement.style.color = '#10b981';
-                    button.href = latestUrl;
-                } else {
-                    throw new Error('未在README中找到链接');
-                }
-            } catch (error) {
-                console.log('使用备用方案:', error);
-                linkElement.textContent = '请前往项目主页查看最新链接';
-                linkElement.style.color = '#f59e0b';
-                button.href = fallbackUrl;
-                button.innerHTML = '<i class="fab fa-github"></i> 前往项目主页获取链接';
-            }
-        }
-        // 页面加载后立即更新链接
-        document.addEventListener('DOMContentLoaded', updateDemoLink);
-    </script>
 </body>
 </html>
