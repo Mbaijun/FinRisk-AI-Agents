@@ -1,3 +1,7 @@
+# FinRisk-AI-Agents
+
+[![项目演示门户](https://img.shields.io/badge/🌐-项目演示门户-6e40c9)](https://mbaijun.github.io/FinRisk-AI-Agents/)
+
 # 🚀 FinRisk-AI-Agents: 开源金融智能体风控平台
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
