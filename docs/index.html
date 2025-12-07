@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinRisk-AI-Agents - 在线演示门户</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
+        .container { background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); overflow: hidden; max-width: 900px; width: 100%; }
+        header { background: linear-gradient(to right, #4f46e5, #7c3aed); color: white; padding: 40px; text-align: center; }
+        h1 { font-size: 2.8rem; margin-bottom: 10px; }
+        .tagline { font-size: 1.2rem; opacity: 0.9; }
+        main { padding: 40px; }
+        .status-card { background: #f0f9ff; border-left: 5px solid #0ea5e9; padding: 25px; margin-bottom: 30px; border-radius: 10px; }
+        .btn { display: inline-flex; align-items: center; gap: 12px; background: linear-gradient(to right, #10b981, #34d399); color: white; padding: 18px 36px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.2rem; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); margin: 10px 0; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.6); }
+        .btn i { font-size: 1.4rem; }
+        .manual-steps { background: #fef3c7; border-left: 5px solid #f59e0b; padding: 25px; border-radius: 10px; margin-top: 30px; }
+        .manual-steps h3 { color: #d97706; margin-bottom: 15px; }
+        code { background: #1f2937; color: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-family: monospace; }
+        footer { text-align: center; padding: 25px; color: #6b7280; border-top: 1px solid #e5e7eb; font-size: 0.9rem; }
+        #demoFrame { width: 100%; height: 600px; border: none; border-radius: 10px; margin-top: 30px; display: none; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+        .loading { text-align: center; padding: 20px; color: #4b5563; }
+        #statusText { margin-top: 15px; font-weight: bold; }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-robot"></i> FinRisk-AI-Agents</h1>
+            <p class="tagline">金融风险分析多智能体系统 - 直接体验演示</p>
+        </header>
+        <main>
+            <div class="status-card">
+                <h2><i class="fas fa-play-circle"></i> 一键启动演示</h2>
+                <p>点击下方按钮，本页面将自动处理所有技术设置，在新窗口中为您打开最新的交互式演示。</p>
+                <button class="btn" onclick="openDemo()" id="demoBtn">
+                    <i class="fas fa-rocket"></i> 立即体验 FinRisk 演示
+                </button>
+                <p id="statusText"></p>
+            </div>
+
+            <iframe id="demoFrame" title="FinRisk-AI-Agents 演示"></iframe>
+
+            <div class="manual-steps">
+                <h3><i class="fas fa-wrench"></i> 备用方案：如果自动开启失败</h3>
+                <p>若上方按钮未能成功打开演示，请按以下步骤操作：</p>
+                <ol>
+                    <li>访问项目主页，从 <code>README.md</code> 顶部复制最新的演示链接。</li>
+                    <li>在新标签页中打开该链接。</li>
+                    <li>如果看到安全警告页，<strong>直接按键盘上的 <code>F5</code> 键刷新一次页面即可</strong>（ngrok免费服务有时会在首次访问后解除限制）。</li>
+                </ol>
+            </div>
+        </main>
+        <footer>
+            <p>本门户由 GitHub Pages 驱动 | FinRisk-AI-Agents 项目 © 2024</p>
+            <p><a href="https://github.com/Mbaijun/FinRisk-AI-Agents" style="color: #6b7280;"><i class="fab fa-github"></i> 访问项目GitHub仓库</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // ====================【重要：这里需要你修改！】====================
+        // 这是你的演示链接，请先运行 ngrok 获得链接，然后替换下面引号里的内容
+        const DEMO_URL = 'https://overharshly-symbolistical-peyton.ngrok-free.dev';
+
+        // ====================【以下代码不要修改】====================
+        function updateStatus(message, type) {
+            const statusEl = document.getElementById('statusText');
+            statusEl.textContent = message;
+            statusEl.className = type;
+        }
+
+        async function openDemo() {
+            const btn = document.getElementById('demoBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在为您启动演示...';
+            updateStatus('正在连接演示服务器...', '');
+
+            try {
+                const response = await axios.get(DEMO_URL, {
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true',
+                        'User-Agent': 'Mozilla/5.0 (Portal Redirection)'
+                    },
+                    timeout: 10000
+                });
+
+                if (response.status === 200) {
+                    updateStatus('✓ 连接成功！正在打开演示...', 'success');
+                    setTimeout(() => {
+                        window.open(DEMO_URL, '_blank');
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-rocket"></i> 再次打开演示';
+                        updateStatus('演示已在新标签页中打开。', 'success');
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('连接出错:', error);
+                updateStatus('⚠️ 无法自动连接。请使用下方的“备用方案”。', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-rocket"></i> 尝试重新连接';
+            }
+        }
+
+        window.onload = function() {
+            const linkInfo = document.createElement('p');
+            linkInfo.innerHTML = `<small>当前指向的演示链接: <code>${DEMO_URL}</code></small>`;
+            document.querySelector('.status-card').appendChild(linkInfo);
+            updateStatus('准备好体验了吗？请点击上方按钮。', '');
+        };
+    </script>
+</body>
+</html>
