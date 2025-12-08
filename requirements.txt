@@ -1,12 +1,5 @@
-﻿# requirements.txt
-fastapi==0.104.1
-uvicorn==0.24.0
-streamlit==1.28.1
-pandas==2.1.3
-numpy==1.24.4
-plotly==5.18.0
-scipy==1.11.4
-requests==2.31.0
-python-multipart==0.0.6
-pydantic==2.5.0
-gradio==3.50.2
+﻿# 兼容 Streamlit Cloud (Python 3.13) 的依赖包版本
+streamlit>=1.28.0
+pandas==2.0.3
+numpy==1.24.3
+plotly>=5.17.0
