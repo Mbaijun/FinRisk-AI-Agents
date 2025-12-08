@@ -12,7 +12,31 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"  # 明确指定侧边栏状态
 )
-
+with st.sidebar.expander("🤖 智能体控制中心", expanded=True):
+    agent1 = st.checkbox("风险评估智能体", value=True)
+    agent2 = st.checkbox("市场监控智能体", value=True)
+    agent3 = st.checkbox("组合管理智能体", value=True)
+    agent4 = st.checkbox("合规检查智能体", value=False)
+    agent5 = st.checkbox("报告生成智能体", value=False)
+    
+    st.divider()
+    
+    # 智能体协同控制
+    if st.button("🔌 启动所有智能体", use_container_width=True):
+        st.session_state.agent1 = True
+        st.session_state.agent2 = True
+        st.session_state.agent3 = True
+        st.session_state.agent4 = True
+        st.session_state.agent5 = True
+        st.rerun()
+    
+    if st.button("🛑 停止所有智能体", use_container_width=True):
+        st.session_state.agent1 = False
+        st.session_state.agent2 = False
+        st.session_state.agent3 = False
+        st.session_state.agent4 = False
+        st.session_state.agent5 = False
+        st.rerun()
 # 2. 初始化 session_state，避免条件判断时引用不存在的键
 if 'agents_running' not in st.session_state:
     st.session_state.agents_running = False
