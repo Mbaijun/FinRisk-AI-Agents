@@ -1,4 +1,4 @@
-# run_simple.py - 修改版，支持ngrok header
+﻿# run_simple.py - 淇敼鐗堬紝鏀寔ngrok header
 import gradio as gr
 import time
 import random
@@ -41,14 +41,11 @@ demo = gr.Interface(
 )
 
 if __name__ == "__main__":
-    print("=== Starting FinRisk-AI-Agents Demo ===")
-    print("Server: http://0.0.0.0:7900")
-    print("Local:  http://localhost:7900")
-    print("=" * 40)
-    
-    # 启动
+    import os
+    port = int(os.environ.get("PORT", 7860))  # 关键修改：从环境变量读取端口
+    print(f"Starting FinRisk-AI-Agents demo on port {port}...")
     demo.launch(
         server_name="0.0.0.0",
-        server_port=7900,
+        server_port=port,  # 关键修改：使用动态端口
         share=False
     )
