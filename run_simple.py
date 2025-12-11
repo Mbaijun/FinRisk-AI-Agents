@@ -33,7 +33,9 @@ def generate_risk_briefing(company_name):
 
 demo = gr.Interface(
     fn=generate_risk_briefing,
-    inputs=gr.Textbox(label="Enter company name", placeholder="e.g., Tesla"),
+    inputs=gr.Textbox(label="Enter company name", placeholder="e.g., Tesla")
+
+app = demo.app,
     outputs=gr.Textbox(label="Risk Briefing"),
     title="FinRisk-AI-Agents Quick Demo",
     examples=[["Tesla"], ["Apple"], ["NVIDIA"]]
@@ -53,3 +55,4 @@ if __name__ == "__main__":
         server_port=port,
         share=False
     )
+
