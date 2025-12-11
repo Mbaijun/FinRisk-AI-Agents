@@ -31,7 +31,7 @@ def generate_risk_briefing(company_name):
 """
     return briefing
 
-# 创建Gradio应用
+# 创建 Gradio 应用
 demo = gr.Interface(
     fn=generate_risk_briefing,
     inputs=gr.Textbox(label="Enter company name", placeholder="e.g., Tesla"),
@@ -40,5 +40,5 @@ demo = gr.Interface(
     examples=[["Tesla"], ["Apple"], ["NVIDIA"]]
 )
 
-# Vercel兼容的导出方式
+# Vercel 需要这个导出 - 关键！
 app = demo.app
