@@ -1,72 +1,230 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinRisk-AI-Agents - 在线演示门户</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>FinRisk AI Agents 门户</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
-        .container { background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); overflow: hidden; max-width: 900px; width: 100%; }
-        header { background: linear-gradient(to right, #4f46e5, #7c3aed); color: white; padding: 40px; text-align: center; }
-        h1 { font-size: 2.8rem; margin-bottom: 10px; }
-        .tagline { font-size: 1.2rem; opacity: 0.9; }
-        main { padding: 40px; }
-        .status-card { background: #f0f9ff; border-left: 5px solid #0ea5e9; padding: 25px; margin-bottom: 30px; border-radius: 10px; }
-        .btn { display: inline-flex; align-items: center; gap: 12px; background: linear-gradient(to right, #10b981, #34d399); color: white; padding: 18px 36px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.2rem; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); margin: 10px 0; }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.6); }
-        .btn i { font-size: 1.4rem; }
-        .manual-steps { background: #fef3c7; border-left: 5px solid #f59e0b; padding: 25px; border-radius: 10px; margin-top: 30px; }
-        .manual-steps h3 { color: #d97706; margin-bottom: 15px; }
-        code { background: #1f2937; color: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-family: monospace; }
-        footer { text-align: center; padding: 25px; color: #6b7280; border-top: 1px solid #e5e7eb; font-size: 0.9rem; }
-        #demoFrame { width: 100%; height: 600px; border: none; border-radius: 10px; margin-top: 30px; display: none; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
-        .loading { text-align: center; padding: 20px; color: #4b5563; }
-        #statusText { margin-top: 15px; font-weight: bold; }
-        .success { color: #10b981; }
-        .error { color: #ef4444; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2 i {
+            color: #667eea;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn i {
+            font-size: 1.2rem;
+        }
+        
+        .status {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .manual-steps {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 30px;
+        }
+        
+        ol {
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        code {
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        footer a {
+            color: #cbd5e0;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1><i class="fas fa-robot"></i> FinRisk-AI-Agents</h1>
-            <p class="tagline">金融风险分析多智能体系统 - 直接体验演示</p>
+            <p class="tagline">基于大语言模型的金融风险管理多智能体系统</p>
         </header>
-        <main>
-            <div class="status-card">
+        
+        <div class="main-content">
+            <div class="card">
                 <h2><i class="fas fa-play-circle"></i> 一键启动演示</h2>
                 <p>点击下方按钮，本页面将自动处理所有技术设置，在新窗口中为您打开最新的交互式演示。</p>
                 <button class="btn" onclick="openDemo()" id="demoBtn">
                     <i class="fas fa-rocket"></i> 立即体验 FinRisk 演示
                 </button>
-                <p id="statusText"></p>
+                <p id="statusText" class="status"></p>
             </div>
 
-            <iframe id="demoFrame" title="FinRisk-AI-Agents 演示"></iframe>
+            <div class="card">
+                <h2><i class="fas fa-star"></i> 核心特性</h2>
+                <ul>
+                    <li><strong>多智能体协同架构</strong>: 5个专业智能体分工合作</li>
+                    <li><strong>实时数据集成</strong>: 股票、债券、加密货币等多资产数据</li>
+                    <li><strong>动态风险模型</strong>: 基于最新研究的风险评估方法</li>
+                    <li><strong>可视化分析</strong>: 交互式图表和风险仪表板</li>
+                    <li><strong>自动化报告</strong>: 一键生成专业风险分析报告</li>
+                </ul>
+            </div>
 
             <div class="manual-steps">
-                <h3><i class="fas fa-wrench"></i> 备用方案：如果自动开启失败</h3>
+                <h3><i class="fas fa-wrench"></i> 备用方案：如自动启动失败</h3>
                 <p>若上方按钮未能成功打开演示，请按以下步骤操作：</p>
                 <ol>
                     <li>访问项目主页，从 <code>README.md</code> 顶部复制最新的演示链接。</li>
                     <li>在新标签页中打开该链接。</li>
-                    <li>如果看到安全警告页，<strong>直接按键盘上的 <code>F5</code> 键刷新一次页面即可</strong>（ngrok免费服务有时会在首次访问后解除限制）。</li>
+                    <li>如果看到安全警告页面，<strong>直接按键盘上的 <code>F5</code> 刷新一次页面即可</strong>（ngrok免费服务有时会在首次访问后解除限制）。</li>
                 </ol>
             </div>
-        </main>
+        </div>
+        
         <footer>
             <p>本门户由 GitHub Pages 驱动 | FinRisk-AI-Agents 项目 © 2024</p>
-            <p><a href="https://github.com/Mbaijun/FinRisk-AI-Agents" style="color: #6b7280;"><i class="fab fa-github"></i> 访问项目GitHub仓库</a></p>
+            <p><a href="https://github.com/Mbaijun/FinRisk-AI-Agents"><i class="fab fa-github"></i> 访问项目GitHub仓库</a></p>
         </footer>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
     <script>
         // ====================【重要：这里需要你修改！】====================
-        // 这是你的演示链接，请先运行 ngrok 获得链接，然后替换下面引号里的内容
-        const DEMO_URL = 'https://overharshly-symbolistical-peyton.ngrok-free.dev';
+        // 这是你的演示链接，请先运行ngrok获得链接，然后替换下面引号里的内容
+        // 例如：const DEMO_URL = ' https://overharshly-symbolistical-peyton.ngrok-free.dev';
+        const DEMO_URL = ' https://overharshly-symbolistical-peyton.ngrok-free.dev';
 
         // ====================【以下代码不要修改】====================
         function updateStatus(message, type) {
@@ -91,28 +249,30 @@
                 });
 
                 if (response.status === 200) {
-                    updateStatus('✓ 连接成功！正在打开演示...', 'success');
+                    updateStatus('✅ 连接成功！正在打开演示...', 'success');
                     setTimeout(() => {
                         window.open(DEMO_URL, '_blank');
                         btn.disabled = false;
                         btn.innerHTML = '<i class="fas fa-rocket"></i> 再次打开演示';
-                        updateStatus('演示已在新标签页中打开。', 'success');
+                        updateStatus('演示已在新的标签页中打开。', 'success');
                     }, 500);
                 }
             } catch (error) {
-                console.error('连接出错:', error);
-                updateStatus('⚠️ 无法自动连接。请使用下方的“备用方案”。', 'error');
+                updateStatus('❌ 无法自动连接演示服务。请使用下方备用方案。', 'error');
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-rocket"></i> 尝试重新连接';
+                btn.innerHTML = '<i class="fas fa-rocket"></i> 重新尝试连接';
+                
+                // 显示备用方案区域
+                document.querySelector('.manual-steps').style.display = 'block';
+                
+                console.error('演示连接失败:', error);
             }
         }
-
-        window.onload = function() {
-            const linkInfo = document.createElement('p');
-            linkInfo.innerHTML = `<small>当前指向的演示链接: <code>${DEMO_URL}</code></small>`;
-            document.querySelector('.status-card').appendChild(linkInfo);
-            updateStatus('准备好体验了吗？请点击上方按钮。', '');
-        };
+        
+        // 页面加载时隐藏备用方案
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.manual-steps').style.display = 'none';
+        });
     </script>
 </body>
 </html>
