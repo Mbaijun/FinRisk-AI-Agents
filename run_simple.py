@@ -31,7 +31,6 @@ def generate_risk_briefing(company_name):
 """
     return briefing
 
-# 创建 Gradio 应用
 demo = gr.Interface(
     fn=generate_risk_briefing,
     inputs=gr.Textbox(label="Enter company name", placeholder="e.g., Tesla"),
@@ -40,5 +39,17 @@ demo = gr.Interface(
     examples=[["Tesla"], ["Apple"], ["NVIDIA"]]
 )
 
-# Vercel 需要这个导出 - 关键！
+# ========== 关键修复：添加这行 ==========
 app = demo.app
+# ======================================
+
+# 保留原有的启动代码（本地测试用）
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 7860))
+    print(f"Starting FinRisk-AI-Agents demo on port {port}...")
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=port,
+        share=False
+    )
