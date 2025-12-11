@@ -31,7 +31,7 @@ def generate_risk_briefing(company_name):
 """
     return briefing
 
-demo = gr.Interface(
+    demo = gr.Interface(
     fn=generate_risk_briefing,
     inputs=gr.Textbox(label="Enter company name", placeholder="e.g., Tesla"),
     outputs=gr.Textbox(label="Risk Briefing"),
@@ -63,3 +63,4 @@ if __name__ == "__main__":
 
 
 app = demo.app
+
