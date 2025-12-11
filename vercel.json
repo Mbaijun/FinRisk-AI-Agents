@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 2,
   "builds": [
     {
@@ -11,5 +11,10 @@
       "src": "/(.*)",
       "dest": "run_simple.py"
     }
-  ]
+  ],
+  "functions": {
+    "run_simple.py": {
+      "maxDuration": 60
+    }
+  }
 }
