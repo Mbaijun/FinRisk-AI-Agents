@@ -1,0 +1,14 @@
+﻿{
+  \"builds\": [
+    {
+      \"src\": \"app_ultimate.py\",
+      \"use\": \"@vercel/python\"
+    }
+  ],
+  \"routes\": [
+    {
+      \"src\": \"/(.*)\",
+      \"dest\": \"/app_ultimate.py\"
+    }
+  ]
+}
