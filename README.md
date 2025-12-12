@@ -4,10 +4,11 @@ Financial Risk Analysis with AI Agents
 
 ## Quick Start
 
-\\ash
+`ash
 pip install -r requirements.txt
 python run.py
-\
+`
+
 ## Deployment
 
 Deploy to Vercel.
