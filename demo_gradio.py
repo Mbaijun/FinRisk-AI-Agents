@@ -31,7 +31,7 @@ def generate_risk_briefing(company_name):
 """
     return briefing
 
-    demo = gr.Interface(
+demo = gr.Interface(
     fn=generate_risk_briefing,
     inputs=gr.Textbox(label="Enter company name", placeholder="e.g., Tesla"),
     outputs=gr.Textbox(label="Risk Briefing"),
@@ -39,17 +39,8 @@ def generate_risk_briefing(company_name):
     examples=[["Tesla"], ["Apple"], ["NVIDIA"]]
 )
 
-app = demo.app,
-    outputs=gr.Textbox(label="Risk Briefing"),
-    title="FinRisk-AI-Agents Quick Demo",
-    examples=[["Tesla"], ["Apple"], ["NVIDIA"]]
-)
-
-# ========== 关键修复：添加这行 ==========
 app = demo.app
-# ======================================
 
-# 保留原有的启动代码（本地测试用）
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 7860))
@@ -59,8 +50,3 @@ if __name__ == "__main__":
         server_port=port,
         share=False
     )
-
-
-
-app = demo.app
-
